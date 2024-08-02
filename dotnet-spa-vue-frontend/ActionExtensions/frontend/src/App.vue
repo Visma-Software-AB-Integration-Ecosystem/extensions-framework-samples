@@ -31,7 +31,6 @@ const request = ref<Request>({
 const popupClosed = ref(false)
 const messageTarget = ref('')
 const tenantId = ref('')
-// const tenantId = ref('')
 
 const requestData = ref(JSON.stringify(request.value, null, 2))
 const responseData = ref('The response will be displayed here after a request has been sent')

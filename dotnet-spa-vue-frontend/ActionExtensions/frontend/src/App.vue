@@ -30,15 +30,18 @@ const request = ref<Request>({
 
 const popupClosed = ref(false)
 const messageTarget = ref('')
+const tenantId = ref('')
+// const tenantId = ref('')
 
 const requestData = ref(JSON.stringify(request.value, null, 2))
 const responseData = ref('The response will be displayed here after a request has been sent')
 
 const commands = [...Object.values(CustomerCommands), ...Object.values(WindowCommands)]
 
-onMounted(() => {
+// Use watch to make sure tenantId is set before opening the popup
+watch(tenantId, () => {
   window.open(
-    '/vismaconnect/popuplogin',
+    '/vismaconnect/popuplogin?tenantid=' + tenantId.value,
     '_blank',
     'location=0,menubar=0,resizable=0,titlebar=0,toolbar=0,scrollbars=0,status=0'
   )
@@ -93,6 +96,9 @@ async function processIncomingMessage(message: any) {
 
         // Message target is required by all the commands so this is set when the application is initialized
         messageTarget.value = response.messageTarget
+
+        // Save Tenant ID to use for authentication call to back-end
+        tenantId.value = response.tenantId
 
         responseData.value = JSON.stringify(response, null, 2)
 

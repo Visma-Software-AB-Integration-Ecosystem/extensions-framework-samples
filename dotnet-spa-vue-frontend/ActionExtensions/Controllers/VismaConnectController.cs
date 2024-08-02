@@ -16,8 +16,14 @@ public class VismaConnectController : ControllerBase
     [HttpGet]
     [Route("popuplogin")]
     [Authorize]
-    public IActionResult PopupLogin()
+    public async Task<IActionResult> PopupLogin([FromQuery] string? tenantId)
     {
+        // Small validation for tenantId
+        if (tenantId is not null && tenantId != HttpContext.Request.Cookies["tenantid"])
+        {
+            await HttpContext.ChallengeAsync();
+        }
+
         return new ContentResult { Content = GetCallbackHtml(), ContentType = "text/html" };
     }
 

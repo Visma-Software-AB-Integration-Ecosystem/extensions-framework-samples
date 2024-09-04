@@ -26,7 +26,7 @@ This command requires some settings and for this project the following settings 
 - Vitest: No
 - End-to-end testing: No
 - ESLint: Yes
-- Prettier:
+- Prettier: Yes
 
 ## Configuration
 

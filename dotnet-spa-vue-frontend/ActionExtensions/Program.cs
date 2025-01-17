@@ -1,3 +1,6 @@
+using ActionExtensions;
+using ActionExtensions.Abstractions.Services;
+using ActionExtensions.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -16,44 +19,43 @@ builder
     {
         setup.Events.OnRedirectToAccessDenied = context =>
         {
-            context.Response.Redirect("/vismaconnect/loginfailed");
+            context.Response.Redirect(Constants.Authorization.Endpoints.AccessDenied);
             return Task.CompletedTask;
         };
-        setup.Cookie.SameSite = SameSiteMode.Lax;
-        setup.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        setup.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+        setup.Cookie.SameSite = SameSiteMode.None;
+        setup.ExpireTimeSpan = TimeSpan.FromMinutes(
+            Constants.VismaConnect.SessionCookieLifetimeMinutes
+        );
     })
     .AddOpenIdConnect(options =>
     {
-        // TODO: Handle different environments
-        // For Production, this value is supposed to be: https://connect.visma.com
-        // The value below is for the staging environment
-        string authority = "https://connect.identity.stagaws.visma.com";
-
-        options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.Authority = authority;
-        options.CallbackPath = "/vismaconnect/callback/";
-        options.RemoteSignOutPath = "/vismaconnect/signout/";
-        // options.ClientId = "<Developer Portal Client ID>";
-        // options.ClientSecret = "<Developer Portal Secret>";
+        options.Authority = Constants.VismaConnect.OpenIdAuthority;
+        options.CallbackPath = Constants.Authorization.Endpoints.Callback;
+        // This value is set in the Details-menu when creating the application in Developer Portal
         options.ClientId = "<CLIENT_ID>";
+        // This value can be generated in Developer Portal under the Credentials-menu
         options.ClientSecret = "<CLIENT_SECRET>";
+        options.RemoteSignOutPath = Constants.Authorization.Endpoints.SignOut;
         options.ResponseType = OpenIdConnectResponseType.Code;
-        options.ResponseMode = OpenIdConnectResponseMode.FormPost;
+        // Access token is required when calling the different integrations that are found in the Developer Portal
         options.SaveTokens = true;
-        options.GetClaimsFromUserInfoEndpoint = true;
-        // Scope openid and profile are added by default. Add more scopes if needed.
-        // options.Scope.Add("tenants");
-        // options.ClaimActions.MapJsonKey("tenants", "tenants");
-        options.Events.OnRedirectToIdentityProvider = context =>
+        options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        foreach (string scope in Constants.VismaConnect.Scopes)
+        {
+            options.Scope.Add(scope);
+        }
+        options.Events.OnRedirectToIdentityProvider = static context =>
         {
             string? tenantId;
             try
             {
+                // The tenantId is passed as a query parameter from the frontend
+                // The frontend receives the tenantId from the init-call inside Visma Net
                 tenantId = context.Request.Query["tenantid"];
             }
-            catch (System.Exception)
+            catch (Exception)
             {
+                // TODO: Handle error properly when tenantId is not found
                 return Task.CompletedTask;
             }
             // Small validation for tenantId
@@ -62,11 +64,15 @@ builder
                 context.Response.Cookies.Append(
                     "tenantid",
                     tenantId ?? "",
-                    new Microsoft.AspNetCore.Http.CookieOptions
+                    new CookieOptions
                     {
-                        Expires = DateTime.Now.AddMinutes(60)
+                        Expires = DateTime.Now.AddMinutes(
+                            Constants.VismaConnect.SessionCookieLifetimeMinutes
+                        ),
                     }
                 );
+                // When adding the tenant_hint parameter, the user will not be prompted to select the tenant
+                // The tenant used in Visma Net will be used automatically instead
                 context.ProtocolMessage.Parameters.Add("tenant_hint", tenantId);
             }
             return Task.CompletedTask;

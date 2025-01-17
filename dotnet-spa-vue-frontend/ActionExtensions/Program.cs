@@ -85,6 +85,11 @@ builder.Services.AddSpaStaticFiles(config =>
     config.RootPath = "frontend/dist";
 });
 
+// HttpContextAccessor is required to get the access token from the HttpContext
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<IVismaNetService, VismaNetService>();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();

@@ -21,17 +21,7 @@ const tenantId = ref('')
 const isLoading = ref(true)
 const primaryKey = ref('')
 
-const requestData = ref(JSON.stringify(request.value, null, 2))
 const responseData = ref('The response will be displayed here after a request has been sent')
-
-// Update requestData when the request changes
-watch(
-  request,
-  () => {
-    requestData.value = JSON.stringify(request.value, null, 2)
-  },
-  { deep: true }
-)
 
 window.addEventListener(
   'message',

@@ -14,7 +14,7 @@ const request = ref<WindowRequest>({
 const messageTarget = inject('messageTarget') as Ref<string>
 
 const requestData = ref(JSON.stringify(request.value, null, 2))
-const responseData = ref('The response will be displayed here after a request has been sent')
+const responseData = inject('responseData') as Ref<string>
 
 watch(
   request,

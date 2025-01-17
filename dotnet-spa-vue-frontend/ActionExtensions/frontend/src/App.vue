@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, provide } from 'vue'
+import { onMounted, ref, provide } from 'vue'
 import { WindowResponseCommands, WindowCommands, ErrorCommands } from '@/constants'
 import type { WindowRequest } from '@/types/requestTypes'
 import type { InitMessage, InitResponse, ErrorResponse } from '@/types/responseTypes'
@@ -22,6 +22,8 @@ const isLoading = ref(true)
 const primaryKey = ref('')
 
 const responseData = ref('The response will be displayed here after a request has been sent')
+// Use provide to make responseData available to children (mainly WindowRequestsView)
+provide('responseData', responseData)
 
 window.addEventListener(
   'message',

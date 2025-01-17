@@ -24,7 +24,31 @@ public class VismaConnectController : ControllerBase
             await HttpContext.ChallengeAsync();
         }
 
-        return new ContentResult { Content = GetCallbackHtml(), ContentType = "text/html" };
+        return new ContentResult
+        {
+            // This is the HTML that is returned when the user is authenticated.
+            // It shows up in the popup window that opens quickly when signing in.
+            Content =
+                @"
+            <!doctype html>
+            <html lang='en'>
+            <head>
+            <title>Visma Connect Authentication process</title>
+            <script>
+            function confirmLogin() {{
+                window.opener.popupConfirmation();
+                window.close();
+            }}
+            confirmLogin();
+            </script>
+            </head>
+            <body>
+                <p>Authenticating...</p>
+            </body>
+            </html>
+            ",
+            ContentType = "text/html"
+        };
     }
 
     /// <summary>
@@ -75,27 +99,5 @@ public class VismaConnectController : ControllerBase
         );
         Response.Headers.Append("X-Frame-Options", $"allow-from {vismaConnectOrigin}");
         return NoContent();
-    }
-
-    public string GetCallbackHtml()
-    {
-        return $@"
-            <!doctype html>
-            <html lang='en'>
-            <head>
-            <title>Visma Connect Authentication process</title>
-            <script>
-            function confirmLogin() {{
-                window.opener.popupConfirmation();
-                window.close();
-            }}
-            confirmLogin();
-            </script>
-            </head>
-            <body>
-                <p>Authenticating...</p>
-            </body>
-            </html>
-            ";
     }
 }

@@ -1,6 +1,6 @@
 # Extensions Framework Samples
 
-This repository contains examples for how to use the extensions framework from Visma.
+This repository contains examples for how to use the Extensions Framework from Visma.
 Currently it is only available for Visma Net.
 
 The examples that are available to date are the following:

@@ -125,7 +125,7 @@ onMounted(() => {
       companyId: '0000000',
       user: 'firstname.lastname@visma.com',
       language: 'en',
-      tenantId: 'b6ef7e99-69be-11ef-b082-0a07a6e6b5cd',
+      tenantId: '<YOUR_TENANT_ID>',
       branchId: '1',
       userChangesPresent: false
     })

@@ -13,8 +13,6 @@ export const WindowCommands = {
   COMMAND_INIT: 'init'
 } as const
 
-export type ApiCommandTypes = (typeof WindowCommands)[keyof typeof WindowCommands]
-
 /** Used when receiving responses after sending requests to the host window */
 export const WindowResponseCommands = {
   INIT: 'initCommand'

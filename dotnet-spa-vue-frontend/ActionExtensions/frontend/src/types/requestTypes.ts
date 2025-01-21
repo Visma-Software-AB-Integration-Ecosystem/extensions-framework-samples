@@ -1,9 +1,5 @@
 export type WindowRequest = OpenRequest | RefreshOrCancelRequest | InitRequest
 
-export type ApiRequest = {
-  requestBody: string | undefined
-}
-
 export type OpenRequest = {
   /** Informs host page to open new document/UI in case of creating new customer/supplier/supplier invoice */
   command: string

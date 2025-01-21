@@ -18,8 +18,6 @@ export const WindowResponseCommands = {
   INIT: 'initCommand'
 } as const
 
-export type WindowCommandTypes = (typeof WindowCommands)[keyof typeof WindowCommands]
-
 /** Commands for handling errors */
 export const ErrorCommands = {
   ERROR: 'error',
